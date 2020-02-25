@@ -1,23 +1,22 @@
 package com.example.todo.demo.users;
 
+import lombok.*;
+import lombok.experimental.Accessors;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.UUID;
 
-@Data
+@Entity(name = "T_USER")
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Getter
+@Setter
 public class User {
 
+    @Id
     private UUID id;
     private String name;
     private String firstname;
-
-    public User(String name, String firstname){
-        this.name = name;
-        this.firstname = firstname;
-    }
-
 }
