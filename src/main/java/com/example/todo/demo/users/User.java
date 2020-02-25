@@ -5,6 +5,9 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import java.util.UUID;
 
 @Entity(name = "T_USER")
