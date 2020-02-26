@@ -3,17 +3,17 @@ package com.example.todo.demo.users;
 import com.example.todo.demo.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    List<UserDTO> userList = new ArrayList<>();
+    List<User> userList = new ArrayList<>();
     private UserRepository userRepo;
 
     @Autowired
@@ -22,43 +22,40 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UUID addUser(UserDTO user) {
-
-        User save = userRepo.save(User.builder()
-                .firstname(user.getFirstname())
-                .name(user.getName())
+    public Mono<UUID> addUser(User user) {
+        return userRepo
+            .save(UserEntity.builder()
+                .firstName(user.getFirstname())
+                .lastName(user.getName())
                 .id(UUID.randomUUID())
-                .build());
-
-        return save.getId();
+                .build())
+            .map(e -> e.getId());
     }
 
     @Override
-    public List<UserDTO> getUsers() {
-        return userRepo.findAll().stream()
-                .map(user -> new UserDTO(user.getId(), user.getName(), user.getFirstname()))
-                .collect(Collectors.toList());
+    public Flux<User> getUsers() {
+        return userRepo.findAll()
+                .map(user -> new User(user.getId(), user.getLastName(), user.getFirstName()));
     }
 
     @Override
-    public void updateUser(UserDTO user, UUID id) {
-		sayCoucou();
-    	userRepo.save(new User(id, user.getName(), user.getFirstname()));
+    public Mono<Void> updateUser(User user, UUID id) {
+    	return userRepo.save(
+    	    UserEntity.builder()
+              .id(id)
+              .lastName(user.getName())
+              .firstName(user.getFirstname())
+              .build())
+          .then();
     }
 
     @Override
-    public void deleteUser(UUID uuid) {
-		sayCoucou();
-        Optional<User> byId = userRepo.findById(uuid);
-        byId.map(user -> {
-            userRepo.delete(user);
-            return user;
-        })
-                .orElseThrow(() -> new ResourceNotFoundException("Ressource not found !"));
-
+    public Mono<Void> deleteUser(UUID id) {
+        return userRepo.findById(id)
+            .switchIfEmpty(Mono.error(new ResourceNotFoundException("Resource not found")))
+            .flatMap(user -> {
+                return userRepo.delete(user);
+            })
+            .then();
     }
-
-	private void sayCoucou() {
-		System.out.println("Coucou");
-	}
 }

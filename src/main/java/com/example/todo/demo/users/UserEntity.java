@@ -1,19 +1,17 @@
 package com.example.todo.demo.users;
 
-import com.example.todo.demo.AbstractBaseEntity;
+import lombok.Builder;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.util.UUID;
 
-@Entity
-@Table(name = "t_user")
 @Data
-public class UserEntity extends AbstractBaseEntity {
+@Builder
+public class UserEntity {
 
+	@Id
+	private UUID id;
 	private String firstName;
-
-	private String lasstName;
+	private String lastName;
 }

@@ -2,141 +2,134 @@ package com.example.todo.demo.users;
 
 
 import com.example.todo.demo.exceptions.ResourceNotFoundException;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.mockito.*;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.stereotype.Repository;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 
 public class UserServiceImplTest {
 
-    UserService service;
+	UserService service;
 
-    @Mock
-    UserRepository repository; //= Mockito.mock(UserRepository.class)
+	@Mock
+	UserRepository repository; //= Mockito.mock(UserRepository.class)
 
-    @Captor
-    ArgumentCaptor<User> argumentCaptor;
+	@Captor
+	ArgumentCaptor<UserEntity> argumentCaptor;
 
-    @BeforeEach
-    public void load(){
-        //MockitoAnnotations.initMocks(this);
-        repository = Mockito.mock(UserRepository.class);
-        service = new UserServiceImpl(repository);
+	@BeforeEach
+	public void load(){
+		//MockitoAnnotations.initMocks(this);
+		repository = Mockito.mock(UserRepository.class);
+		service = new UserServiceImpl(repository);
 
-        Mockito.when(repository.save(any())).thenReturn(User.builder()
-                .firstname("FirstName")
-                .name("LastName")
-                .id(UUID.randomUUID()).build());
+		Mockito.when(repository.save(any())).thenReturn(Mono.just(UserEntity.builder()
+				.firstName("FirstName")
+				.lastName("LastName")
+				.id(UUID.randomUUID()).build()));
 
-        argumentCaptor = ArgumentCaptor.forClass(User.class);
-    }
+		argumentCaptor = ArgumentCaptor.forClass(UserEntity.class);
+	}
 
-    @Test
-    public void updateUser(){
-        //Given si j'ai un utilisateur dans la base
-        //When quand je mets à jour ses propriétés
-        //Then les propriétés devraient être mises à jour
+	@Test
+	public void updateUser(){
+		//Given si j'ai un utilisateur dans la base
+		//When quand je mets à jour ses propriétés
+		//Then les propriétés devraient être mises à jour
 
 
-        UUID id = UUID.randomUUID();
-        service.updateUser(UserDTO.builder()
-                .firstname("FirstName")
-                .name("LastName")
-                .id(id).build(), id);
+		UUID id = UUID.randomUUID();
+		service.updateUser(User.builder()
+				.firstname("FirstName")
+				.name("LastName")
+				.id(id).build(), id);
 
-        Mockito.verify(repository).save(argumentCaptor.capture());
-        User value = argumentCaptor.getValue();
+		Mockito.verify(repository).save(argumentCaptor.capture());
+		UserEntity value = argumentCaptor.getValue();
 
-        Assertions.assertEquals("FirstName", value.getFirstname());
-        Assertions.assertEquals("LastName", value.getName());
-        Assertions.assertEquals(id, value.getId());
+		Assertions.assertEquals("FirstName", value.getFirstName());
+		Assertions.assertEquals("LastName", value.getLastName());
+		Assertions.assertEquals(id, value.getId());
 
-    }
+	}
 
-    @Test
-    public void getAllUser() {
-        //Given j'ai 2 entités dans la base
-        Mockito.when(repository.findAll()).thenReturn(
-                Arrays.asList(
-                        User.builder()
-                                .firstname("FirstName")
-                                .name("LastName")
-                                .id(UUID.randomUUID()).build(),
-                        User.builder()
-                                .firstname("FirstName")
-                                .name("LastName")
-                                .id(UUID.randomUUID()).build()));
+	@Test
+	public void getAllUser() {
+		//Given j'ai 2 entités dans la base
+		Mockito.when(repository.findAll()).thenReturn(
+				Flux.just(
+						UserEntity.builder()
+								.firstName("FirstName")
+								.lastName("LastName")
+								.id(UUID.randomUUID()).build(),
+						UserEntity.builder()
+								.firstName("FirstName")
+								.lastName("LastName")
+								.id(UUID.randomUUID()).build()
+				)
+		);
 
-        //When j'appelle service.getUsers()
-        List<UserDTO> users = service.getUsers();
+		//When j'appelle service.getUsers()
+		Flux<User> users = service.getUsers();
 
-        //Then Ca me renvoie une Liste avec 2 éléments
-        Assert.assertTrue(users.size()==2);
-    }
+		//Then Ca me renvoie une Liste avec 2 éléments
+		StepVerifier.create(users)
+				.expectNextCount(2)
+				.expectComplete();
+	}
 
-    @Test
-    public void deleteUser(){
-        //Given je recherche un user id = UUID,
-        UUID id = UUID.randomUUID();
-        Mockito.when(repository.findById(id))
-                .thenReturn(Optional.of(User.builder()
-                                .firstname("FirstName")
-                                .name("LastName")
-                                .id(id).build()));
+	@Test
+	public void deleteUser(){
+		//Given je recherche un user id = UUID,
+		UUID id = UUID.randomUUID();
+		Mockito.when(repository.findById(id))
+				.thenReturn(Mono.just(UserEntity.builder()
+						.firstName("FirstName")
+						.lastName("LastName")
+						.id(id).build()));
 
-        //When je tente de le supprimer
-        service.deleteUser(id);
-        //Then il est supprimé
-        Mockito.verify(repository).delete(argumentCaptor.capture());
-        User value = argumentCaptor.getValue();
+		Mockito.when(repository.delete(any()))
+				.thenReturn(Mono.empty());
 
-        Assertions.assertEquals("FirstName", value.getFirstname());
-        Assertions.assertEquals("LastName", value.getName());
-    }
+		//When je tente de le supprimer
+		Mono<Void> deleteUser = service.deleteUser(id);
 
-    @Test
-    public void deleteUnknownUser(){
-        //Given je recherche un user id = UUID,
-        UUID id = UUID.randomUUID();
-        Mockito.when(repository.findById(id))
-                .thenReturn(Optional.of(User.builder()
-                        .firstname("FirstName")
-                        .name("LastName")
-                        .id(id).build()));
+		//Then il est supprimé
+		StepVerifier.create(deleteUser)
+				.verifyComplete();
 
-        //When je tente de le supprimer
-        UUID uuid = UUID.randomUUID();
-        try {
-            service.deleteUser(uuid);
-            Assert.fail("Should throw an Exception");
-        }
-        catch (ResourceNotFoundException e)
-        {
-            Mockito.verify(repository, Mockito.times(0)).delete(any());
-        }
+		Mockito.verify(repository).delete(argumentCaptor.capture());
+		UserEntity value = argumentCaptor.getValue();
 
-        //Then il est supprimé
-        /*
-        User value = argumentCaptor.getValue();
-        */
+		Assertions.assertEquals("FirstName", value.getFirstName());
+		Assertions.assertEquals("LastName", value.getLastName());
+	}
 
-        /*
-        Assertions.assertEquals("FirstName", value.getFirstname());
-        Assertions.assertEquals("LastName", value.getName());
-         */
+	@Test
+	public void deleteUnknownUser(){
+		//Given je recherche un user id = UUID,
+		UUID id = UUID.randomUUID();
+		Mockito.when(repository.findById(id))
+				.thenReturn(Mono.empty());
 
-    }
+		//When je tente de le supprimer
+		Mono<Void> deleteUser = service.deleteUser(id);
+
+		//Then il est supprimé
+		StepVerifier.create(deleteUser)
+				.expectError(ResourceNotFoundException.class)
+				.verify();
+
+		Mockito.verify(repository, Mockito.times(0)).delete(any());
+	}
 }

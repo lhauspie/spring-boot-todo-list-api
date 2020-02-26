@@ -3,17 +3,18 @@ package com.example.todo.demo;
 import com.example.todo.demo.tasks.TaskEntity;
 import org.springframework.data.domain.Persistable;
 
-import javax.persistence.*;
 import java.util.UUID;
 
-@MappedSuperclass
+//import javax.persistence.*;
+
+//@MappedSuperclass
 public abstract class AbstractBaseEntity implements Persistable<UUID> {
 
-	@Id
-	@Column(name = "id", length = 16, unique = true, nullable = false)
+//	@Id
+//	@Column(name = "id", length = 16, unique = true, nullable = false)
 	private UUID id = UUID.randomUUID();
 
-	@Transient
+//	@Transient
 	private Boolean persisted = false;
 
 	@Override
@@ -38,15 +39,16 @@ public abstract class AbstractBaseEntity implements Persistable<UUID> {
 		return getId().equals(that.getId());
 	}
 
-	@PostPersist
-	@PostLoad
+//	@PostPersist
+//	@PostLoad
 	private void setPersisted() {
 		persisted = true;
 	}
 
-	public void setId(UUID id) {
+	public <T extends AbstractBaseEntity> T setId(UUID id) {
 		this.id = id;
 		persisted = true;
+		return (T) this;
 	}
 
 	public UUID getId() {

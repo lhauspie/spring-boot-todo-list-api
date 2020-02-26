@@ -1,10 +1,15 @@
 package com.example.todo.demo.tasks;
 
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
 import java.util.UUID;
 
 public interface TaskService {
 
-	UUID createTask(String label);
-	List<TaskEntity> getTasks();
+	Mono<UUID> createTask(String label);
+
+	Flux<TaskEntity> getTasks();
+
+	Mono<Void> deleteTask(UUID id);
 }

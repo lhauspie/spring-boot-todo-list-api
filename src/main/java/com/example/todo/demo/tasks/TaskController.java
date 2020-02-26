@@ -1,18 +1,18 @@
 package com.example.todo.demo.tasks;
 
-import io.netty.handler.codec.http.HttpResponseStatus;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.net.URI;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/tasks")
@@ -36,18 +36,27 @@ public class TaskController {
 					}
 			)
 	})
-	@ResponseStatus(value = HttpStatus.CREATED, reason = "")
-	public ResponseEntity createTask(@RequestBody TaskDTO task) {
-		return ResponseEntity.created(URI.create("/tasks/" + taskService.createTask(task.getLabel()))).build();
+	@ResponseStatus(
+			value = HttpStatus.CREATED,
+			reason = "Everything is OK, the task is created with provided body")
+	public Mono<ResponseEntity> createTask(@RequestBody TaskDTO task) {
+		return taskService.createTask(task.getLabel())
+				.map(t -> ResponseEntity.created(URI.create("/tasks/" + t.toString())).build());
 	}
 
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity getTasks() {
-		return ResponseEntity.ok(taskService.getTasks().stream().map(task -> {
-			TaskDTO taskDTO = new TaskDTO();
-			taskDTO.setId(task.getId());
-			taskDTO.setLabel(task.getLabel());
-			return taskDTO;
-		}).collect(Collectors.toList()));
+	public Flux<TaskDTO> getTasks() {
+		return taskService.getTasks()
+				.map(task ->
+						new TaskDTO()
+								.setId(task.getId())
+								.setLabel(task.getLabel())
+				);
+	}
+
+	@DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Mono<ResponseEntity> deleteTask(@PathVariable("id") UUID id) {
+		return taskService.deleteTask(id)
+				.map(t -> ResponseEntity.noContent().build());
 	}
 }
