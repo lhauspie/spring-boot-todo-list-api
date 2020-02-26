@@ -1,9 +1,8 @@
 package com.example.todo.demo.tasks;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 
-import java.util.Optional;
 import java.util.UUID;
 
-public interface TaskRepository extends CrudRepository<TaskEntity, UUID> {
+public interface TaskRepository extends ReactiveMongoRepository<TaskEntity, UUID> {
 }

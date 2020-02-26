@@ -1,8 +1,6 @@
 package com.example.todo.demo.exceptions;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.springframework.http.HttpStatus;
 

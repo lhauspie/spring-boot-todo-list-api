@@ -1,23 +1,33 @@
 package com.example.todo.demo.tasks;
 
-import com.example.todo.demo.AbstractBaseEntity;
-import com.example.todo.demo.users.User;
 import com.example.todo.demo.users.UserEntity;
 import lombok.Data;
+import lombok.experimental.Accessors;
+import org.springframework.data.annotation.Id;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.util.Objects;
+import java.util.UUID;
+
 
 @Data
-@Entity
-@Table(name = "t_task")
-public class TaskEntity extends AbstractBaseEntity {
+@Accessors(chain = true)
+public class TaskEntity {
 
-	@Column(name = "label")
+	@Id
+	private UUID id = UUID.randomUUID();
 	private String label;
-
-	@ManyToOne
 	private UserEntity assignee;
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		TaskEntity that = (TaskEntity) o;
+		return getId().equals(that.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getId());
+	}
 }
