@@ -13,7 +13,6 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UUID addUser(User user) {
-		sayCoucou();
 		user.setId(UUID.randomUUID());
 		userList.add(user);
 		return user.getId();
