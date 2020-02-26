@@ -3,8 +3,9 @@ package com.example.todo.demo.users;
 import java.util.UUID;
 
 public interface UserService {
-    public UUID addUser(User user);
-    public java.util.List<User> getUsers();
-    public void updateUser(User user, UUID id);
+    public UUID addUser(UserDTO user);
+    public java.util.List<UserDTO> getUsers();
+    public void updateUser(UserDTO user, UUID id);
+    public void deleteUser(UUID uuid) ;
 
 }
