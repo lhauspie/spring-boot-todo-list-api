@@ -42,6 +42,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	private void sayCoucou() {
-		System.out.println("COUCOU");
+		System.out.println("Coucou");
 	}
 }
