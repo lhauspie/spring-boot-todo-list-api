@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void updateUser(User user, UUID id) {
-
+		sayCoucou();
 		userList.stream()
 				.filter(u -> u.getId().equals(id))
 				.findFirst()
@@ -38,5 +38,9 @@ public class UserServiceImpl implements UserService {
 							userList.add(user);
 						});
 
+	}
+
+	private void sayCoucou() {
+		System.out.println("Coucou");
 	}
 }
