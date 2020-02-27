@@ -16,3 +16,4 @@ Ce endpoint accèpte les verbs HTTP POST, GET, PUT, PATCH, DELETE.
 Nous souhaitons permettre le CRUD sur les utilisateurs grâce au endpoint `/users`.
 Ce endpoint accèpte les verbs HTTP POST, GET, PUT, PATCH, DELETE.
 
+## Generation de la documentation
