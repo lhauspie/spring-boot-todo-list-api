@@ -2,12 +2,10 @@ package com.example.todo.demo.users;
 
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.springframework.data.annotation.Id;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import java.util.UUID;
 
-@Entity(name = "T_USER")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
