@@ -10,9 +10,9 @@ import java.time.Duration;
 @RestController
 public class HelloWorldController {
 
-	@GetMapping(value = "/slow", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Flux<Integer> getTasksWebFlux() {
+	@GetMapping(value = "/hello", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Flux<String> getTasksWebFlux() {
 		return Flux.range(1,10)
-				.delayElements(Duration.ofSeconds(1));
+				.map(i -> "Hello World " + i + " !\n");
 	}
 }
