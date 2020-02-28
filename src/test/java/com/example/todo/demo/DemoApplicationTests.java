@@ -1,3 +1,4 @@
+/*
 package com.example.todo.demo;
 
 import com.example.todo.demo.users.UserDTO;
@@ -56,13 +57,16 @@ class DemoApplicationTests {
     public void load(){
         mockMvc= MockMvcBuilders.webAppContextSetup(context).build();
 
-        /*
+        */
+/*
         service.addUser(new UserDTO("toto", "titi"));
         service.addUser(new UserDTO("toto2", "titi2"));
         service.addUser(new UserDTO("toto3", "titi3"));
-*/
+*//*
 
-                /*
+
+                */
+/*
         Mockito.when(service.getUsers())
                 .thenReturn(Arrays.asList(new UserDTO("toto", "titi"),
                                         new UserDTO("toto", "titi"),
@@ -70,7 +74,8 @@ class DemoApplicationTests {
 
         createdUUID = UUID.randomUUID();
         Mockito.when(service.addUser(Mockito.any())).thenReturn(createdUUID);
-        */
+        *//*
+
 
     }
 
@@ -119,3 +124,4 @@ class DemoApplicationTests {
 
 
 }
+*/

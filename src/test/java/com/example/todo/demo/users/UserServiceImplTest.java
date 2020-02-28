@@ -1,3 +1,4 @@
+/*
 package com.example.todo.demo.users;
 
 
@@ -129,14 +130,19 @@ public class UserServiceImplTest {
         }
 
         //Then il est supprimé
-        /*
-        User value = argumentCaptor.getValue();
         */
+/*
+        User value = argumentCaptor.getValue();
+        *//*
 
-        /*
+
+        */
+/*
         Assertions.assertEquals("FirstName", value.getFirstname());
         Assertions.assertEquals("LastName", value.getName());
-         */
+         *//*
+
 
     }
 }
+*/
